@@ -1,5 +1,6 @@
 ---
-title: Template Final Assignment
+title: HugginFace Agent Course Final Assessment
+description: agent to create and evaluate against a subset of the GAIA benchmark to obtain certificate of completion.
 emoji: 🕵🏻‍♂️
 colorFrom: indigo
 colorTo: indigo
