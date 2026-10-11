@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: HugginFace Agent Course Final Assessment
 description: agent to create and evaluate against a subset of the GAIA benchmark to obtain certificate of completion.
@@ -14,3 +15,7 @@ hf_oauth_expiration_minutes: 480
 ---
 test - swap remote names
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+=======
+# hf_agent_course_final_project
+HugginFace Agent Course: agent to create and evaluate against a subset of the GAIA benchmark to obtain certificate of completion.
+>>>>>>> e6157fbffee3a25ccb0cd3059db4ba32e362f4e1
