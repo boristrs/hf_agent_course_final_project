@@ -1,0 +1,19 @@
+name: Sync to Hugging Face Space
+on:
+  push:
+    branches: [main, dev, feature/*]
+    
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only run for main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Push to Hugging Face Space
+        uses: huggingface/hub-sync@main
+        with:
+          huggingface_repo_id: boris-trs/Agent_Course_Final_Assignment
+          hf_token: ${{ secrets.HF_TOKEN }}
+          repo_type: space
