@@ -17,3 +17,4 @@ jobs:
           huggingface_repo_id: boris-trs/Agent_Course_Final_Assignment
           hf_token: ${{ secrets.HF_TOKEN }}
           repo_type: space
+          
