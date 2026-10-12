@@ -31,12 +31,13 @@ SYSTEM_PROMPT = ("""
     If you are asked for a comma separated list, apply the above rules depending of whether the element to be put in the list is a number or a string.
 """)
 
-tools = [search_tool, get_latest_news]
+tools = [search_tool]
 chat_with_tools = model.bind_tools(tools)
 
 # Generate the AgentState and Agent graph
 class AgentState(TypedDict):
     question: str
+    file_url: str
     messages: Annotated[list[AnyMessage], add_messages]
 
 def assistant(state: AgentState):
