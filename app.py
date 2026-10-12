@@ -4,11 +4,21 @@ import requests
 import inspect
 import pandas as pd
 from gaia_agent import builder
-from langchain_core.messages import AnyMessage, HumanMessage, AIMessage, SystemMessage
+from langfuse.langchain import CallbackHandler
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(dotenv_path="../.env" )
 
 # (Keep Constants as is)
 # --- Constants ---
 DEFAULT_API_URL = "https://agents-course-unit4-scoring.hf.space"
+LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY")
+LANGFUSE_PUBLIC_KEY = os.getenv("LANGFUSE_PUBLIC_KEY")
+LANGFUSE_BASE_URL = os.getenv("LANGFUSE_BASE_URL")
+
+# Initialize Langfuse CallbackHandler for LangGraph/Langchain (tracing)
+langfuse_handler = CallbackHandler()
 
 # --- Basic Agent Definition ---
 # ----- THIS IS WERE YOU CAN BUILD WHAT YOU WANT ------
@@ -19,10 +29,13 @@ class BasicAgent:
     def __call__(self, question: str) -> str:
         print(f"Agent received question (first 50 chars): {question[:50]}...")
         try:
-            result = self.gaia_agent.invoke({
+            result = self.gaia_agent.invoke(
+                input={
                 "question": question,
                 "messages": [],
-            })
+                },
+                config={"callbacks": [langfuse_handler]}
+            )
             final_answer = result["messages"][-1].content
             fixed_answer = final_answer.split("YOUR FINAL ANSWER:")[-1].strip() if "YOUR FINAL ANSWER:" in final_answer else final_answer.strip()
             print(f"Agent returning answer: {final_answer}")
