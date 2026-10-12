@@ -26,12 +26,13 @@ class BasicAgent:
     def __init__(self):
         self.gaia_agent = builder.compile()
         print("BasicAgent initialized.")
-    def __call__(self, question: str) -> str:
+    def __call__(self, question: str, file_url: str | None) -> str:
         print(f"Agent received question (first 50 chars): {question[:50]}...")
         try:
             result = self.gaia_agent.invoke(
                 input={
                 "question": question,
+                "file_url": file_url,
                 "messages": [],
                 },
                 config={"callbacks": [langfuse_handler]}
@@ -64,7 +65,7 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     api_url = DEFAULT_API_URL
     questions_url = f"{api_url}/questions"
     submit_url = f"{api_url}/submit"
-
+    file_url = f"{api_url}/file/"
     # 1. Instantiate Agent ( modify this part to create your agent)
     try:
         agent = BasicAgent()
@@ -101,14 +102,15 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     answers_payload = []
     print(questions_data)
     print(f"Running agent on {len(questions_data)} questions...")
-    for item in questions_data:
+    for item in questions_data[0:5]:
         task_id = item.get("task_id")
         question_text = item.get("question")
+        file_name = item.get("file_name")
         if not task_id or question_text is None:
             print(f"Skipping item with missing task_id or question: {item}")
             continue
         try:
-            submitted_answer = agent(question_text)
+            submitted_answer = agent(question= question_text, file_url= f"{file_url}{file_name}" if file_name else None)
             answers_payload.append({"task_id": task_id, "submitted_answer": submitted_answer})
             results_log.append({"Task ID": task_id, "Question": question_text, "Submitted Answer": submitted_answer})
         except Exception as e:
