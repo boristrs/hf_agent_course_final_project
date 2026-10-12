@@ -23,7 +23,9 @@ class BasicAgent:
                 "question": question,
                 "messages": [],
             })
-            fixed_answer = result["messages"][-1].content
+            final_answer = result["messages"][-1].content
+            fixed_answer = final_answer.split("YOUR FINAL ANSWER:")[-1].strip() if "YOUR FINAL ANSWER:" in final_answer else final_answer.strip()
+            print(f"Agent returning answer: {final_answer}")
         except Exception as e:
             print(f"Error occurred while invoking agent: {e}")
             fixed_answer = "This is a default answer."
@@ -84,8 +86,9 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     # 3. Run your Agent
     results_log = []
     answers_payload = []
+    print(questions_data)
     print(f"Running agent on {len(questions_data)} questions...")
-    for item in questions_data:
+    for item in questions_data[0:1]:
         task_id = item.get("task_id")
         question_text = item.get("question")
         if not task_id or question_text is None:
