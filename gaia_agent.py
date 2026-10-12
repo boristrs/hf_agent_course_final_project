@@ -24,7 +24,7 @@ model = ChatMistralAI(
 SYSTEM_PROMPT = ("""
     You are a general AI assistant.
     I will ask you a question.
-    Report your thoughts, and finish your answer with the following template: [YOUR FINAL ANSWER].
+    Report your thoughts, and finish your answer with the following template:
     YOUR FINAL ANSWER should be a number OR as few words as possible OR a comma separated list of numbers and/or strings.
     If you are asked for a number, don't use comma to write your number neither use units such as $ or percent sign unless specified otherwise.
     If you are asked for a string, don't use articles, neither abbreviations (e.g. for cities), and write the digits in plain text unless specified otherwise.
@@ -37,12 +37,15 @@ chat_with_tools = model.bind_tools(tools)
 # Generate the AgentState and Agent graph
 class AgentState(TypedDict):
     question: str
+    messages: Annotated[list[AnyMessage], add_messages]
 
-def assistant(question: str):
-    return chat_with_tools.invoke([
+def assistant(state: AgentState):
+    response = chat_with_tools.invoke([
         SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(content=question),
+        HumanMessage(content=state["question"]),
+        *state["messages"],
     ])
+    return {"messages": [response]}
 
 ## The graph
 builder = StateGraph(AgentState)
