@@ -19,7 +19,11 @@ class BasicAgent:
     def __call__(self, question: str) -> str:
         print(f"Agent received question (first 50 chars): {question[:50]}...")
         try:
-            fixed_answer = self.gaia_agent.invoke({"messages": [HumanMessage(content=question)]})
+            result = self.gaia_agent.invoke({
+                "question": question,
+                "messages": [],
+            })
+            fixed_answer = result["messages"][-1].content
         except Exception as e:
             print(f"Error occurred while invoking agent: {e}")
             fixed_answer = "This is a default answer."
@@ -105,47 +109,47 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     print(status_update)
 
     # 5. Submit
-    # print(f"Submitting {len(answers_payload)} answers to: {submit_url}")
-    # try:
-    #     response = requests.post(submit_url, json=submission_data, timeout=60)
-    #     response.raise_for_status()
-    #     result_data = response.json()
-    #     final_status = (
-    #         f"Submission Successful!\n"
-    #         f"User: {result_data.get('username')}\n"
-    #         f"Overall Score: {result_data.get('score', 'N/A')}% "
-    #         f"({result_data.get('correct_count', '?')}/{result_data.get('total_attempted', '?')} correct)\n"
-    #         f"Message: {result_data.get('message', 'No message received.')}"
-    #     )
-    #     print("Submission successful.")
-    #     results_df = pd.DataFrame(results_log)
-    #     return final_status, results_df
-    # except requests.exceptions.HTTPError as e:
-    #     error_detail = f"Server responded with status {e.response.status_code}."
-    #     try:
-    #         error_json = e.response.json()
-    #         error_detail += f" Detail: {error_json.get('detail', e.response.text)}"
-    #     except requests.exceptions.JSONDecodeError:
-    #         error_detail += f" Response: {e.response.text[:500]}"
-    #     status_message = f"Submission Failed: {error_detail}"
-    #     print(status_message)
-    #     results_df = pd.DataFrame(results_log)
-    #     return status_message, results_df
-    # except requests.exceptions.Timeout:
-    #     status_message = "Submission Failed: The request timed out."
-    #     print(status_message)
-    #     results_df = pd.DataFrame(results_log)
-    #     return status_message, results_df
-    # except requests.exceptions.RequestException as e:
-    #     status_message = f"Submission Failed: Network error - {e}"
-    #     print(status_message)
-    #     results_df = pd.DataFrame(results_log)
-    #     return status_message, results_df
-    # except Exception as e:
-    #     status_message = f"An unexpected error occurred during submission: {e}"
-    #     print(status_message)
-    #     results_df = pd.DataFrame(results_log)
-    #     return status_message, results_df
+    print(f"Submitting {len(answers_payload)} answers to: {submit_url}")
+    try:
+        response = requests.post(submit_url, json=submission_data, timeout=60)
+        response.raise_for_status()
+        result_data = response.json()
+        final_status = (
+            f"Submission Successful!\n"
+            f"User: {result_data.get('username')}\n"
+            f"Overall Score: {result_data.get('score', 'N/A')}% "
+            f"({result_data.get('correct_count', '?')}/{result_data.get('total_attempted', '?')} correct)\n"
+            f"Message: {result_data.get('message', 'No message received.')}"
+        )
+        print("Submission successful.")
+        results_df = pd.DataFrame(results_log)
+        return final_status, results_df
+    except requests.exceptions.HTTPError as e:
+        error_detail = f"Server responded with status {e.response.status_code}."
+        try:
+            error_json = e.response.json()
+            error_detail += f" Detail: {error_json.get('detail', e.response.text)}"
+        except requests.exceptions.JSONDecodeError:
+            error_detail += f" Response: {e.response.text[:500]}"
+        status_message = f"Submission Failed: {error_detail}"
+        print(status_message)
+        results_df = pd.DataFrame(results_log)
+        return status_message, results_df
+    except requests.exceptions.Timeout:
+        status_message = "Submission Failed: The request timed out."
+        print(status_message)
+        results_df = pd.DataFrame(results_log)
+        return status_message, results_df
+    except requests.exceptions.RequestException as e:
+        status_message = f"Submission Failed: Network error - {e}"
+        print(status_message)
+        results_df = pd.DataFrame(results_log)
+        return status_message, results_df
+    except Exception as e:
+        status_message = f"An unexpected error occurred during submission: {e}"
+        print(status_message)
+        results_df = pd.DataFrame(results_log)
+        return status_message, results_df
 
 
 # --- Build Gradio Interface using Blocks ---
