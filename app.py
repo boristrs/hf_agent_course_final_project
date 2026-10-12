@@ -3,6 +3,8 @@ import gradio as gr
 import requests
 import inspect
 import pandas as pd
+from gaia_agent import builder
+from langchain_core.messages import AnyMessage, HumanMessage, AIMessage, SystemMessage
 
 # (Keep Constants as is)
 # --- Constants ---
@@ -12,10 +14,22 @@ DEFAULT_API_URL = "https://agents-course-unit4-scoring.hf.space"
 # ----- THIS IS WERE YOU CAN BUILD WHAT YOU WANT ------
 class BasicAgent:
     def __init__(self):
+        self.gaia_agent = builder.compile()
         print("BasicAgent initialized.")
     def __call__(self, question: str) -> str:
         print(f"Agent received question (first 50 chars): {question[:50]}...")
-        fixed_answer = "This is a default answer."
+        try:
+            result = self.gaia_agent.invoke({
+                "question": question,
+                "messages": [],
+            })
+            final_answer = result["messages"][-1].content
+            fixed_answer = final_answer.split("YOUR FINAL ANSWER:")[-1].strip() if "YOUR FINAL ANSWER:" in final_answer else final_answer.strip()
+            print(f"Agent returning answer: {final_answer}")
+        except Exception as e:
+            print(f"Error occurred while invoking agent: {e}")
+            fixed_answer = "This is a default answer."
+
         print(f"Agent returning fixed answer: {fixed_answer}")
         return fixed_answer
 
@@ -72,6 +86,7 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     # 3. Run your Agent
     results_log = []
     answers_payload = []
+    print(questions_data)
     print(f"Running agent on {len(questions_data)} questions...")
     for item in questions_data:
         task_id = item.get("task_id")
