@@ -103,8 +103,8 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     answers_payload = []
     print(questions_data)
     print(f"Running agent on {len(questions_data)} questions...")
-    for item in [questions_data[i] for i in [3]]: #
-    # for item in questions_data:
+    # for item in [questions_data[i] for i in [3]]: #
+    for item in questions_data:
         task_id = item.get("task_id")
         question_text = item.get("question")
         file_name = item.get("file_name")
