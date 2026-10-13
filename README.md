@@ -5,7 +5,7 @@ colorFrom: blue
 colorTo: purple
 sdk: gradio
 sdk_version: "4.42.0"
-python_version: "3.13.x"
+python_version: "3.13.15"
 app_file: app.py
 pinned: false
 ---
