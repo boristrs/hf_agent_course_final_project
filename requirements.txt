@@ -1,2 +1,11 @@
-gradio
-requests
+bs4>=0.0.2
+ddgs>=9.16.0
+gradio[oauth]>=6.30.0
+langchain>=1.4.4
+langchain-community>=0.4.2
+langchain-huggingface>=1.2.3
+langchain-mistralai>=1.1.6
+langfuse>=4.17.0
+langgraph>=1.2.14
+requests>=2.34.2
+youtube-transcript-api>=1.2.4
