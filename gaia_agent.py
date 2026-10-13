@@ -6,7 +6,9 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import tools_condition
 from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 
-from tools import inspect_video_frames, search_tool, get_youtube_transcript
+from search_tools import search_tool
+from video_tools import inspect_video_frames, get_youtube_transcript
+from image_tools import download_file_from_url, fetch_task_file
 
 import os
 from dotenv import load_dotenv
@@ -31,19 +33,25 @@ SYSTEM_PROMPT = ("""
     If you are asked for a comma separated list, apply the above rules depending of whether the element to be put in the list is a number or a string.
 """)
 
-tools = [search_tool, inspect_video_frames, get_youtube_transcript]
+tools = [search_tool, inspect_video_frames, get_youtube_transcript, download_file_from_url, fetch_task_file]
 chat_with_tools = model.bind_tools(tools)
 
 # Generate the AgentState and Agent graph
 class AgentState(TypedDict):
     question: str
-    file_url: str
+    file_name: str
+    task_id: str
     messages: Annotated[list[AnyMessage], add_messages]
 
 def assistant(state: AgentState):
+    user_content = state["question"]
+    if state.get("task_id"):
+        user_content += f"\n\nTASK_ID: {state['task_id']}"
+    if state.get("file_name"):
+        user_content += f"\nFILE_NAME: {state['file_name']}"
     response = chat_with_tools.invoke([
         SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(content=state["question"]),
+        HumanMessage(content=user_content),
         *state["messages"],
     ])
     return {"messages": [response]}
