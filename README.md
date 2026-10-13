@@ -1,14 +1,8 @@
 ---
 title: HugginFace Agent Course Final Assessment
 description: agent to create and evaluate against a subset of the GAIA benchmark to obtain certificate of completion.
-emoji: 🕵🏻‍♂️
-colorFrom: indigo
-colorTo: indigo
-sdk: gradio
-sdk_version: 5.25.2
-app_file: app.py
-pinned: false
-hf_oauth: true
-# optional, default duration is 8 hours/480 minutes. Max duration is 30 days/43200 minutes.
-hf_oauth_expiration_minutes: 480
----
+
+
+Unless personal mistake, task files are unavailable anymore, which makes 5 questions not possible to solve. 
+fetch task file  <Response [404]> taskid  cca530fc-4052-43b2-b130-b30968d8aa44 url  https://agents-course-unit4-scoring.hf.space/files/cca530fc-4052-43b2-b130-b30968d8aa44
+
