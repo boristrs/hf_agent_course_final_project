@@ -1,14 +1,13 @@
 from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
-from langchain_core.messages import AnyMessage, HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import AnyMessage, HumanMessage, SystemMessage
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import tools_condition
-from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 
 from search_tools import search_tool, fetch_page
-from video_tools import inspect_video_frames, get_youtube_transcript
-from image_tools import download_file_from_url, fetch_task_file
+from video_tools import get_youtube_transcript
+from image_tools import fetch_task_file
 
 import os
 from dotenv import load_dotenv
@@ -19,6 +18,7 @@ from langchain_mistralai.chat_models import ChatMistralAI
 load_dotenv()
 LANGCHAIN_MISTRAL_API_KEY = os.getenv("LANGCHAIN_MISTRAL_API_KEY")
 model = ChatMistralAI(
+    # model_name="mistral-large-4",
     mistral_api_key=LANGCHAIN_MISTRAL_API_KEY,
     temperature=0,
 )
@@ -33,7 +33,7 @@ SYSTEM_PROMPT = ("""
     If you are asked for a comma separated list, apply the above rules depending of whether the element to be put in the list is a number or a string.
 """)
 
-tools = [search_tool, fetch_page, inspect_video_frames, get_youtube_transcript, download_file_from_url, fetch_task_file]
+tools = [search_tool, fetch_page, get_youtube_transcript, fetch_task_file]
 chat_with_tools = model.bind_tools(tools)
 
 # Generate the AgentState and Agent graph
@@ -45,10 +45,11 @@ class AgentState(TypedDict):
 
 def assistant(state: AgentState):
     user_content = state["question"]
-    if state.get("task_id"):
-        user_content += f"\n\nTASK_ID: {state['task_id']}"
+    # Only add file context if there's a file_name
     if state.get("file_name"):
+        user_content += f"\n\nTASK_ID: {state.get('task_id', '')}"
         user_content += f"\nFILE_NAME: {state['file_name']}"
+
     response = chat_with_tools.invoke([
         SystemMessage(content=SYSTEM_PROMPT),
         HumanMessage(content=user_content),
