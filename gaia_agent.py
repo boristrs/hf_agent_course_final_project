@@ -6,7 +6,7 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import tools_condition
 from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 
-from tools import search_tool, get_latest_news
+from tools import inspect_video_frames, search_tool, get_youtube_transcript
 
 import os
 from dotenv import load_dotenv
@@ -31,7 +31,7 @@ SYSTEM_PROMPT = ("""
     If you are asked for a comma separated list, apply the above rules depending of whether the element to be put in the list is a number or a string.
 """)
 
-tools = [search_tool]
+tools = [search_tool, inspect_video_frames, get_youtube_transcript]
 chat_with_tools = model.bind_tools(tools)
 
 # Generate the AgentState and Agent graph
