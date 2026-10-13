@@ -1,3 +1,15 @@
+---
+title: GAIA Benchmark Agent - HF Agent Course Final
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: "4.42.0"
+python_version: "3.13.x"
+app_file: app.py
+pinned: false
+---
+
 # Hugging Face Agent Course - Final Unit Assignment
 
 **GAIA Benchmark Agent for Unit 4 Evaluation**
@@ -28,9 +40,6 @@ The agent can successfully handle the following question types from the GAIA ben
 
 ### 1. **Web Search & Research**
 - **Tool**: `search_tool` (DuckDuckGo Search)
-- **Use Case**: Questions requiring factual information, current events, or general knowledge
-- **Example**: "What is the capital of France?", "When was Python 3.10 released?"
-- **Limitation**: Limited to publicly available web information
 
 ### 2. **Web Page Analysis**
 - **Tool**: `fetch_page`
@@ -39,16 +48,20 @@ The agent can successfully handle the following question types from the GAIA ben
 ### 3. **YouTube Video Transcript Analysis**
 - **Tool**: `get_youtube_transcript`
 - **Use Case**: Questions about YouTube video speech content
-
+- **Note**: Only works if transcripts are available for the video
 
 ---
+
+## Issue
+
+Unless it is a mistake from my side, it prevents to answer the questions with a file associated. A bypass could be to go download each attachment from the GAIA benchmark directly.
 
 The Hugging Face Space endpoint for task files returns `404 Not Found` errors:
 ```
 fetch task file <Response [404]> taskid cca530fc-4052-43b2-b130-b30968d8aa44
 url https://agents-course-unit4-scoring.hf.space/files/cca530fc-4052-43b2-b130-b30968d8aa44
 ```
-Unless it is a mistake from my side, it prevents to answer the questions with a file associated. A bypass could be to go download each attachment from the GAIA benchmark directly
+
 **Affected Question Types**:
 - ✗ **Audio Transcription**: Cannot process audio files
 - ✗ **Chess Position Analysis**: Cannot access chess position images
@@ -56,10 +69,12 @@ Unless it is a mistake from my side, it prevents to answer the questions with a 
 - ✗ **Spreadsheet Reading**: Cannot read or process spreadsheet data
 - ✗ **Document Analysis**: Cannot access attached PDFs, Word docs, etc.
 
+---
+
 ## 🔧 Setup Instructions
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.13.x
 - Hugging Face account (for submission)
 - Mistral API key (set as `LANGCHAIN_MISTRAL_API_KEY`)
 - Langfuse credentials (optional, for tracing)
@@ -67,16 +82,26 @@ Unless it is a mistake from my side, it prevents to answer the questions with a 
 ### Installation
 ```bash
 # Clone the repository
-.git clone https://github.com/boristrs/hf_agent_course_final_project
+git clone https://github.com/boristrs/hf_agent_course_final_project
 cd Agent_Course_Final_Assignment
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
 ### Environment Variables
+```env
 # Required
 LANGCHAIN_MISTRAL_API_KEY=your_mistral_api_key
 
+# Optional (for Langfuse tracing)
+LANGFUSE_SECRET_KEY=your_langfuse_secret
+LANGFUSE_PUBLIC_KEY=your_langfuse_public
+LANGFUSE_BASE_URL=https://cloud.langfuse.com
+
+# Hugging Face Space (auto-set when deployed)
+SPACE_ID=your_space_id
+SPACE_HOST=your_space_host
 ```
 
 ### Running Locally
@@ -86,7 +111,6 @@ python app.py
 - Opens Gradio interface at `http://localhost:7860`
 - Click "Run Evaluation & Submit All Answers"
 - Log in with Hugging Face account
-
 
 ---
 
@@ -104,5 +128,3 @@ Agent_Course_Final_Assignment/
 ├── video_tools.py          # Video processing tools
 └── .env                    # Environment variables (not tracked)
 ```
-
----
